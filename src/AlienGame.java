@@ -73,6 +73,7 @@ public class AlienGame extends GameCore{
         alien.setVelocity(0, 0);
         alien.show();
 
+        //scale the astronaut too
         astronaut.setScale(0.92f, 0.7f);
         astronaut.setPosition(100, 100);
         astronaut.setVelocity(0, 0);
@@ -128,6 +129,7 @@ public class AlienGame extends GameCore{
         for(Sprite s : sprites){
             s.update(timeElapsed);
             //handleScreenEdge(s, tmap, timeElapsed);
+            checkTileCollisons(s, tmap);
         }
         
     }
@@ -161,7 +163,30 @@ public class AlienGame extends GameCore{
     public boolean boundingBoxCollision(Sprite s1, Sprite s2){return false;}
 
     public void checkTileCollision(Sprite s, TileMap tmap){
+        float sx = s.getX();
+        float sy = s.getY();
+        float tileWidth = tmap.getTileWidth();
+        float tileHeight = tmap.getTileHeight();
+        int xtile = (int)(sx / tileWidth);
+        int ytile = (int)(sy / tileHeight);
+        char ch = tmap.getTileChar(xtile, ytile);
+        if (ch != '.') {
 
+            s.stop();
+        }
+    }
+
+    public void checkingTileCollision(Sprite s, TileMap tmap){
+        float tileWidth = tmap.getTileWidth();
+        float tileHeight = tmap.getTileHeight();
+
+        int foot = (int)(s.getY()+tileHeight);
+        int middle = (int)(s.getX()+(0.5*tileWidth));
+
+        char ch = tmap.getTileChar(middle, foot);
+        if (ch != '.'){
+            s.stop();
+        }
     }
 
     public void keyReleased(KeyEvent e){
