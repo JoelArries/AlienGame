@@ -127,9 +127,9 @@ public class AlienGame extends GameCore{
         }
         
         for(Sprite s : sprites){
+            checkFloorTileCollision(s, tmap);
             s.update(timeElapsed);
             //handleScreenEdge(s, tmap, timeElapsed);
-            checkTileCollisons(s, tmap);
         }
         
     }
@@ -162,29 +162,15 @@ public class AlienGame extends GameCore{
 
     public boolean boundingBoxCollision(Sprite s1, Sprite s2){return false;}
 
-    public void checkTileCollision(Sprite s, TileMap tmap){
-        float sx = s.getX();
-        float sy = s.getY();
+
+    public void checkFloorTileCollision(Sprite s, TileMap tmap){
         float tileWidth = tmap.getTileWidth();
         float tileHeight = tmap.getTileHeight();
-        int xtile = (int)(sx / tileWidth);
-        int ytile = (int)(sy / tileHeight);
-        char ch = tmap.getTileChar(xtile, ytile);
+
+        int tileX = (int)((s.getX() + s.getWidth()/2) / tileWidth);
+        int tileY = (int)((s.getY() + s.getHeight()) / tileHeight); // bottom of sprite
+        char ch = tmap.getTileChar(tileX, tileY);
         if (ch != '.') {
-
-            s.stop();
-        }
-    }
-
-    public void checkingTileCollision(Sprite s, TileMap tmap){
-        float tileWidth = tmap.getTileWidth();
-        float tileHeight = tmap.getTileHeight();
-
-        int foot = (int)(s.getY()+tileHeight);
-        int middle = (int)(s.getX()+(0.5*tileWidth));
-
-        char ch = tmap.getTileChar(middle, foot);
-        if (ch != '.'){
             s.stop();
         }
     }
