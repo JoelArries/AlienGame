@@ -2,6 +2,9 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
+
+import javax.swing.ImageIcon;
+
 import game2D.*;
 
 //Student ID: 3329293
@@ -37,6 +40,8 @@ public class AlienGame extends GameCore{
 
     TileMap tmap = new TileMap();
 
+    Image background;
+
     long timeElapsed;
     boolean debug = false;
 
@@ -50,6 +55,7 @@ public class AlienGame extends GameCore{
     }
 
     public void init(){
+        background = new ImageIcon("images/rockBackground.png").getImage();
         tmap.loadMap("maps", "mars.txt");
 
         setSize(tmap.getPixelWidth()/4, tmap.getPixelHeight());
@@ -71,7 +77,7 @@ public class AlienGame extends GameCore{
         timeElapsed = 0;
         //scale the alien to be the width and height of a tile.
         alien.setScale(0.13f,0.058f);
-        alien.setPosition(200, 325);
+        alien.setPosition(250, 325);
         alien.setVelocity(0, 0);
         alien.show();
 
@@ -86,12 +92,10 @@ public class AlienGame extends GameCore{
 
     public void draw(Graphics2D g){
         //make sure to draw "back to front": BackG->ForeG->sprite
-        int xOffset = -(int)alien.getX() + 200;
-        int yOffset = -(int)alien.getY() + 200;
-
-        g.setBackground(Color.white);
-        g.fillRect(0, 0, getWidth(), getHeight());
-
+        int xOffset = -(int)astronaut.getX() + 200;
+        int yOffset = -(int)astronaut.getY() + 200;
+        
+        g.drawImage(background, 0, 0, null);
 
         //offsets applied to tilemap and drawn
         tmap.draw(g, xOffset, yOffset);
