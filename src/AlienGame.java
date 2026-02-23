@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import game2D.*;
 
@@ -29,14 +30,14 @@ public class AlienGame extends GameCore{
     //Game Resources
     ArrayList<Sprite> sprites = new ArrayList<>();
 
-    Sprite alien;
-    Sprite astronaut;
+    Sprite alien, astronaut;
 
     Animation alienWalking, astronautWalking;
 
     TileMap tmap = new TileMap();
 
     long timeElapsed;
+    boolean debug;
 
     @SuppressWarnings("serial")
 
@@ -54,7 +55,7 @@ public class AlienGame extends GameCore{
         setVisible(true);
 
         alienWalking = new Animation();
-        alienWalking.loadAnimationFromSheet("images/spritesheet6.png", 6, 1, 100);
+        alienWalking.loadAnimationFromSheet("images/alienWalkingCropped.png", 6, 1, 100);
         astronautWalking = new Animation();
         astronautWalking.loadAnimationSeries("images/walk.png", 3, 4, 100, 6, 5);
 
@@ -69,13 +70,13 @@ public class AlienGame extends GameCore{
         timeElapsed = 0;
         //scale the alien to be the width and height of a tile.
         alien.setScale(0.13f,0.058f);
-        alien.setPosition(200, 200);
+        alien.setPosition(200, 325);
         alien.setVelocity(0, 0);
         alien.show();
 
         //scale the astronaut too
         astronaut.setScale(0.92f, 0.7f);
-        astronaut.setPosition(100, 100);
+        astronaut.setPosition(100, 325);
         astronaut.setVelocity(0, 0);
         astronaut.show();
         sprites.add(alien);
@@ -90,7 +91,6 @@ public class AlienGame extends GameCore{
         g.setBackground(Color.white);
         g.fillRect(0, 0, getWidth(), getHeight());
 
-        //offsets are applied to clouds here and then drawn
 
         //offsets applied to tilemap and drawn
         tmap.draw(g, xOffset, yOffset);
@@ -99,11 +99,14 @@ public class AlienGame extends GameCore{
         alien.drawTransformed(g);
         astronaut.setOffsets(xOffset, yOffset);
         astronaut.drawTransformed(g);
-
-
         //show score implemented here if wanted
 
         //debug mode here when wanted
+        if(debug){
+            for(Sprite s: sprites){
+                s.drawBoundingBox(g);
+            }
+        }
     }
 
 
@@ -121,6 +124,10 @@ public class AlienGame extends GameCore{
 
         if(moveRight){
             astronaut.setVelocityX(walkSpeed);
+            alien.setVelocityX(walkSpeed);
+        }
+        else if(moveLeft){
+            astronaut.setVelocityX(-walkSpeed);
         }
         else{
             astronaut.setVelocityX(0);
@@ -151,14 +158,6 @@ public class AlienGame extends GameCore{
         }
     }
 
-    public void keyPressed(KeyEvent e){
-        int keyPressed = e.getKeyCode();
-
-        switch(keyPressed)
-        {
-            case KeyEvent.VK_RIGHT  : moveRight = true; break;
-        }
-    }
 
     public boolean boundingBoxCollision(Sprite s1, Sprite s2){return false;}
 
@@ -167,11 +166,26 @@ public class AlienGame extends GameCore{
         float tileWidth = tmap.getTileWidth();
         float tileHeight = tmap.getTileHeight();
 
-        int tileX = (int)((s.getX() + s.getWidth()/2) / tileWidth);
+        int tileX = (int)((s.getX() + s.getWidth()/2) / tileWidth); // middle of sprite
         int tileY = (int)((s.getY() + s.getHeight()) / tileHeight); // bottom of sprite
+        
         char ch = tmap.getTileChar(tileX, tileY);
         if (ch != '.') {
-            s.stop();
+            s.setVelocityY(0);
+        }
+    }
+
+    public void keyPressed(KeyEvent e){
+        int keyPressed = e.getKeyCode();
+
+        switch(keyPressed)
+        {
+            case KeyEvent.VK_RIGHT  : moveRight = true; break;
+            case KeyEvent.VK_LEFT   : moveLeft = true;  break;
+            case KeyEvent.VK_UP     : astronaut.setVelocityY(astronaut.getVelocityY()-0.1f); break; //Doesnt currently work
+                                                                                                    //since colliding with floor sets y=0
+                                                                                                    //changing the velocity doesnt work
+            case KeyEvent.VK_D      : debug = true; break;
         }
     }
 
@@ -180,6 +194,7 @@ public class AlienGame extends GameCore{
 
         switch (keyReleased) {
             case KeyEvent.VK_RIGHT  : moveRight = false; break;
+            case KeyEvent.VK_LEFT   : moveLeft = false;  break;
                 
         }
     }
