@@ -77,13 +77,13 @@ public class AlienGame extends GameCore{
         timeElapsed = 0;
         //scale the alien to be the width and height of a tile.
         alien.setScale(0.13f,0.058f);
-        alien.setPosition(250, 325);
+        alien.setPosition(350, 325);
         alien.setVelocity(0, 0);
         alien.show();
 
         //scale the astronaut too
         astronaut.setScale(0.92f, 0.7f);
-        astronaut.setPosition(100, 325);
+        astronaut.setPosition(200, 325);
         astronaut.setVelocity(0, 0);
         astronaut.show();
         sprites.add(alien);
@@ -93,7 +93,7 @@ public class AlienGame extends GameCore{
     public void draw(Graphics2D g){
         //make sure to draw "back to front": BackG->ForeG->sprite
         int xOffset = -(int)astronaut.getX() + 200;
-        int yOffset = -(int)astronaut.getY() + 200;
+        int yOffset = -(int)astronaut.getY() + 300;
         
         g.drawImage(background, 0, 0, null);
 
