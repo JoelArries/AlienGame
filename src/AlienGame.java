@@ -106,8 +106,10 @@ public class AlienGame extends GameCore{
         alien.drawTransformed(g);
         astronaut.setOffsets(xOffset, yOffset);
         astronaut.drawTransformed(g);
-        //show score implemented here if wanted
 
+        String msg = "Parts collected: " + partsCollected;
+        g.setColor(Color.BLACK);
+        g.drawString(msg, getWidth()-150, 50);
         //debug mode here when wanted
         if(debug){
             for(Sprite s: sprites){
