@@ -24,6 +24,7 @@ public class AlienGame extends GameCore{
     boolean moveRight = false;
     boolean moveLeft = false;
     boolean idle = true;
+    boolean onGround = false;
     //Not sure about this one 
     boolean turning = false;
 
@@ -37,7 +38,7 @@ public class AlienGame extends GameCore{
     TileMap tmap = new TileMap();
 
     long timeElapsed;
-    boolean debug;
+    boolean debug = false;
 
     @SuppressWarnings("serial")
 
@@ -124,7 +125,6 @@ public class AlienGame extends GameCore{
 
         if(moveRight){
             astronaut.setVelocityX(walkSpeed);
-            alien.setVelocityX(walkSpeed);
         }
         else if(moveLeft){
             astronaut.setVelocityX(-walkSpeed);
@@ -134,8 +134,8 @@ public class AlienGame extends GameCore{
         }
         
         for(Sprite s : sprites){
-            checkFloorTileCollision(s, tmap);
             s.update(timeElapsed);
+            checkFloorTileCollision(s, tmap);
             //handleScreenEdge(s, tmap, timeElapsed);
         }
         
@@ -171,7 +171,11 @@ public class AlienGame extends GameCore{
         
         char ch = tmap.getTileChar(tileX, tileY);
         if (ch != '.') {
+            s.setY(tileY * tileHeight - s.getHeight());
             s.setVelocityY(0);
+            onGround = true;
+        }else{
+            onGround = false;
         }
     }
 
@@ -182,9 +186,7 @@ public class AlienGame extends GameCore{
         {
             case KeyEvent.VK_RIGHT  : moveRight = true; break;
             case KeyEvent.VK_LEFT   : moveLeft = true;  break;
-            case KeyEvent.VK_UP     : astronaut.setVelocityY(astronaut.getVelocityY()-0.1f); break; //Doesnt currently work
-                                                                                                    //since colliding with floor sets y=0
-                                                                                                    //changing the velocity doesnt work
+            case KeyEvent.VK_UP     : if(onGround){astronaut.setVelocityY(-0.1f); onGround = false;} break;
             case KeyEvent.VK_D      : debug = true; break;
         }
     }
