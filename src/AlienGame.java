@@ -34,6 +34,8 @@ public class AlienGame extends GameCore{
     //Game Resources
     ArrayList<Sprite> sprites = new ArrayList<>();
 
+    int partsCollected = 0;
+
     Sprite alien, astronaut;
 
     Animation alienWalking, astronautWalking;
@@ -176,14 +178,18 @@ public class AlienGame extends GameCore{
         int tileY = (int)((s.getY() + s.getHeight()) / tileHeight); // bottom of sprite
         
         char ch = tmap.getTileChar(tileX, tileY);
-        if (ch != '.') {
+        //TODO:
+        //check for other spaceship parts. If part is final part && partsCollected == 3 -> draw spaceship at end.
+        if (ch == 'p') {
+            tmap.setTileChar('.', tileX, tileY);
+            onGround = false;
+            partsCollected++;
+        }
+        else if (ch != '.') {
             s.setY(tileY * tileHeight - s.getHeight());
             s.setVelocityY(0);
             onGround = true;
-        }else if (ch == 'p') {
-            t
-        }
-        else{
+        }else{
             onGround = false;
         }
     }
