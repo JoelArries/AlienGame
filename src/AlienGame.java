@@ -180,7 +180,10 @@ public class AlienGame extends GameCore{
             s.setY(tileY * tileHeight - s.getHeight());
             s.setVelocityY(0);
             onGround = true;
-        }else{
+        }else if (ch == 'p') {
+            t
+        }
+        else{
             onGround = false;
         }
     }
