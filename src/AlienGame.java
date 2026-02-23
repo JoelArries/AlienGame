@@ -128,9 +128,11 @@ public class AlienGame extends GameCore{
         astronaut.setAnimationSpeed(1.0f);
 
         if(moveRight){
+            astronaut.setScale(0.92f, 0.7f);
             astronaut.setVelocityX(walkSpeed);
         }
         else if(moveLeft){
+            astronaut.setScale(-0.92f, 0.7f);
             astronaut.setVelocityX(-walkSpeed);
         }
         else{
