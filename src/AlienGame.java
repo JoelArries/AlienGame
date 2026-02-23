@@ -22,14 +22,16 @@ public class AlienGame extends GameCore{
     //Game Constants
     float gravity = 0.0001f;
     float walkSpeed = 0.05f;
+    float alienScaledX = 0.13f;
+    float alienScaledY = 0.058f;
+    int alienDirection = 1;
 
     //Game State Flags
     boolean moveRight = false;
     boolean moveLeft = false;
     boolean idle = true;
     boolean onGround = false;
-    //Not sure about this one 
-    boolean turning = false;
+    boolean alienHitWall;
 
     //Game Resources
     ArrayList<Sprite> sprites = new ArrayList<>();
@@ -42,6 +44,7 @@ public class AlienGame extends GameCore{
 
     TileMap tmap = new TileMap();
 
+    Image space;
     Image background;
 
     long timeElapsed;
@@ -57,6 +60,7 @@ public class AlienGame extends GameCore{
     }
 
     public void init(){
+        space = new ImageIcon("images/space.png").getImage();
         background = new ImageIcon("images/rockBackground.png").getImage();
         tmap.loadMap("maps", "mars.txt");
 
@@ -96,6 +100,8 @@ public class AlienGame extends GameCore{
         //make sure to draw "back to front": BackG->ForeG->sprite
         int xOffset = -(int)astronaut.getX() + 200;
         int yOffset = -(int)astronaut.getY() + 300;
+
+        g.drawImage(space, 0, 0, null);
         
         g.drawImage(background, 0, 0, null);
 
@@ -130,6 +136,8 @@ public class AlienGame extends GameCore{
         alien.setAnimationSpeed(1.0f);
         astronaut.setVelocityY(astronaut.getVelocityY() + (gravity*timeElapsed));
         astronaut.setAnimationSpeed(1.0f);
+
+        alienWalk();
 
         if(moveRight){
             astronaut.setScale(0.92f, 0.7f);
@@ -215,6 +223,28 @@ public class AlienGame extends GameCore{
             case KeyEvent.VK_RIGHT  : moveRight = false; break;
             case KeyEvent.VK_LEFT   : moveLeft = false;  break;
                 
+        }
+    }
+
+    public void alienWalk() {
+        float tileWidth = tmap.getTileWidth();
+        float tileHeight = tmap.getTileHeight();
+
+        alien.setVelocityX(walkSpeed * alienDirection);
+
+        int tileY = (int) ((alien.getY() + alien.getHeight() / 2) / tileHeight);
+        int tileX;
+        if (alienDirection == 1) {
+            tileX = (int) ((alien.getX() + alien.getWidth()) / tileWidth);
+        } else {
+            tileX = (int) ((alien.getX()) / tileWidth);
+        }
+
+
+        char ch = tmap.getTileChar(tileX, tileY);
+        if (ch == 'r') { 
+            alienDirection *= -1;
+            alien.setScale(alienScaledX * alienDirection, alienScaledY);
         }
     }
 }
