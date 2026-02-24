@@ -383,7 +383,7 @@ public class Sprite {
 
 		Image img = getImage();
     	//g.drawRect((int)x+xoff,(int)y+yoff,img.getWidth(null),img.getHeight(null));
-        g.drawRect((int)x+xoff, (int)y+yoff, getWidth(), getHeight());
+        g.drawRect((int)x+xoff, (int)y+yoff, getWidth(), getHeight());  //draw box according to scaled sprite size
     }
     
     /**

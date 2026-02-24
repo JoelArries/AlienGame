@@ -36,6 +36,7 @@ public class AlienGame extends GameCore{
     //Game Resources
     ArrayList<Sprite> sprites = new ArrayList<>();
 
+    int lives = 3;
     int partsCollected = 0;
 
     Sprite alien, astronaut;
@@ -46,6 +47,8 @@ public class AlienGame extends GameCore{
 
     Image space;
     Image background;
+    Image fullHeart;
+    Image emptyHeart;
 
     long timeElapsed;
     boolean debug = false;
@@ -62,6 +65,7 @@ public class AlienGame extends GameCore{
     public void init(){
         space = new ImageIcon("images/space.png").getImage();
         background = new ImageIcon("images/rockBackground.png").getImage();
+
         tmap.loadMap("maps", "mars.txt");
 
         setSize(tmap.getPixelWidth()/4, tmap.getPixelHeight());
@@ -94,6 +98,10 @@ public class AlienGame extends GameCore{
         astronaut.show();
         sprites.add(alien);
         sprites.add(astronaut);
+
+        fullHeart = new ImageIcon("images/fullHeart.png").getImage();
+        emptyHeart = new ImageIcon("images/emptyHeart.png").getImage();
+
     }
 
     public void draw(Graphics2D g){
@@ -112,10 +120,14 @@ public class AlienGame extends GameCore{
         alien.drawTransformed(g);
         astronaut.setOffsets(xOffset, yOffset);
         astronaut.drawTransformed(g);
-
+/* 
         String msg = "Parts collected: " + partsCollected;
-        g.setColor(Color.BLACK);
+        g.setColor(Color.WHITE);
         g.drawString(msg, getWidth()-150, 50);
+*/
+
+        handleLives(g);
+
         //debug mode here when wanted
         if(debug){
             for(Sprite s: sprites){
@@ -132,7 +144,7 @@ public class AlienGame extends GameCore{
         * and animation speed for each sprite it concerns
          */
 
-        alien.setVelocityY(alien.getVelocityY()+(gravity*timeElapsed));
+        alien.setVelocityY(0);
         alien.setAnimationSpeed(1.0f);
         astronaut.setVelocityY(astronaut.getVelocityY() + (gravity*timeElapsed));
         astronaut.setAnimationSpeed(1.0f);
@@ -154,30 +166,20 @@ public class AlienGame extends GameCore{
         for(Sprite s : sprites){
             s.update(timeElapsed);
             checkFloorTileCollision(s, tmap);
-            //handleScreenEdge(s, tmap, timeElapsed);
         }
-        
-    }
-
-    public void handleScreenEdge(Sprite s, TileMap tmap, long timeElapsed){
-        /*
-        * TODO:
-        * implement this with tile collision instead after initial rough tests
-        */
-
-        float difference = s.getY() + s.getHeight() - tmap.getPixelHeight();
-        if (difference > 0)
-        {
-        	// Put the player back on the map according to how far over they were
-        	s.setY(tmap.getPixelHeight() - s.getHeight() - (int)(difference)); 
-        	
-        	// and make them bounce
-        	s.setVelocityY(-s.getVelocityY()*0.5f);
+        if(boundingBoxCollision(astronaut, alien)){
+            System.out.println("Collision");
+            lives--;
+            astronaut.setPosition(200, 325);
         }
     }
 
-
-    public boolean boundingBoxCollision(Sprite s1, Sprite s2){return false;}
+    public boolean boundingBoxCollision(Sprite s1, Sprite s2){
+        return ((s1.getX() + s1.getWidth() > s2.getX()) &&
+                (s1.getX() < (s2.getX() + s2.getWidth())) &&
+                ((s1.getY() + s1.getHeight() > s2.getY()) &&
+                        (s1.getY() < s2.getY() + s2.getHeight())));
+    }
 
 
     public void checkFloorTileCollision(Sprite s, TileMap tmap){
@@ -213,6 +215,7 @@ public class AlienGame extends GameCore{
             case KeyEvent.VK_LEFT   : moveLeft = true;  break;
             case KeyEvent.VK_UP     : if(onGround){astronaut.setVelocityY(-0.1f); onGround = false;} break;
             case KeyEvent.VK_D      : debug = true; break;
+            case KeyEvent.VK_L      : lives--;
         }
     }
 
@@ -245,6 +248,31 @@ public class AlienGame extends GameCore{
         if (ch == 'r') { 
             alienDirection *= -1;
             alien.setScale(alienScaledX * alienDirection, alienScaledY);
+        }
+    }
+
+    public void handleLives(Graphics2D g) {
+
+        switch(lives){
+            case 3  :   g.drawImage(fullHeart, getWidth()-150, 50, null);
+                        g.drawImage(fullHeart, getWidth()-100, 50, null);
+                        g.drawImage(fullHeart, getWidth()-50, 50, null); 
+                        break;
+           
+            case 2  :   g.drawImage(fullHeart, getWidth()-150, 50, null);
+                        g.drawImage(fullHeart, getWidth()-100, 50, null);
+                        g.drawImage(emptyHeart, getWidth()-50, 50, null); 
+                        break;
+
+            case 1  :   g.drawImage(fullHeart, getWidth()-150, 50, null);
+                        g.drawImage(emptyHeart, getWidth()-100, 50, null);
+                        g.drawImage(emptyHeart, getWidth()-50, 50, null); 
+                        break;
+
+            case 0  :   g.drawImage(emptyHeart, getWidth()-150, 50, null);
+                        g.drawImage(emptyHeart, getWidth()-100, 50, null);
+                        g.drawImage(emptyHeart, getWidth()-50, 50, null); 
+                        break;
         }
     }
 }
