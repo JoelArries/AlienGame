@@ -47,6 +47,7 @@ public class AlienGame extends GameCore{
 
     Image space;
     Image background;
+    Image tallRock;
     Image fullHeart;
     Image emptyHeart;
 
@@ -65,6 +66,10 @@ public class AlienGame extends GameCore{
     public void init(){
         space = new ImageIcon("images/space.png").getImage();
         background = new ImageIcon("images/rockBackground.png").getImage();
+        tallRock = new ImageIcon("images/tallRock.png").getImage();
+
+        fullHeart = new ImageIcon("images/fullHeart.png").getImage();
+        emptyHeart = new ImageIcon("images/emptyHeart.png").getImage();
 
         tmap.loadMap("maps", "mars.txt");
 
@@ -98,10 +103,6 @@ public class AlienGame extends GameCore{
         astronaut.show();
         sprites.add(alien);
         sprites.add(astronaut);
-
-        fullHeart = new ImageIcon("images/fullHeart.png").getImage();
-        emptyHeart = new ImageIcon("images/emptyHeart.png").getImage();
-
     }
 
     public void draw(Graphics2D g){
@@ -112,6 +113,8 @@ public class AlienGame extends GameCore{
         g.drawImage(space, 0, 0, null);
         
         g.drawImage(background, 0, 0, null);
+
+        g.drawImage(tallRock, 300, 229, null);
 
         //offsets applied to tilemap and drawn
         tmap.draw(g, xOffset, yOffset);
@@ -172,6 +175,8 @@ public class AlienGame extends GameCore{
             lives--;
             astronaut.setPosition(200, 325);
         }
+
+        checkHorizontalCollision(astronaut);
     }
 
     public boolean boundingBoxCollision(Sprite s1, Sprite s2){
@@ -181,6 +186,45 @@ public class AlienGame extends GameCore{
                         (s1.getY() < s2.getY() + s2.getHeight())));
     }
 
+    public void checkHorizontalCollision(Sprite s){
+        float tileWidth = tmap.getTileWidth();
+        float tileHeight = tmap.getTileHeight();
+
+        int topTile = (int)(s.getY()  / tileHeight);
+        int bottomTile = (int)((s.getY() + s.getHeight() -1) / tileHeight);
+
+        if(moveRight){
+
+            int rightTile = (int)((s.getX() + s.getWidth()) / tileWidth);
+
+            for(int y = topTile; y<=bottomTile; y++){
+                if(tmap.getTileChar(rightTile, y) != '.'){
+                    s.setX(rightTile * tileWidth - s.getWidth());
+                    s.setVelocityX(0);
+                }
+                else if(tmap.getTileChar(rightTile, y) == 'p'){
+                    tmap.setTileChar('.', rightTile, y);
+                    partsCollected++;
+                }
+            }
+        }
+
+        if(moveLeft) { 
+
+        int leftTile = (int)(s.getX() / tileWidth);
+
+        for(int y = topTile; y <= bottomTile; y++) {
+            if(tmap.getTileChar(leftTile, y) != '.') {
+                s.setX((leftTile + 1) * tileWidth);
+                s.setVelocityX(0);
+            }
+        }
+    }
+    }
+
+    public void checkTopSpriteCollision(Sprite s){
+        //TODO:
+    }
 
     public void checkFloorTileCollision(Sprite s, TileMap tmap){
         float tileWidth = tmap.getTileWidth();
@@ -245,14 +289,13 @@ public class AlienGame extends GameCore{
 
 
         char ch = tmap.getTileChar(tileX, tileY);
-        if (ch == 'r') { 
+        if (ch != '.') { 
             alienDirection *= -1;
             alien.setScale(alienScaledX * alienDirection, alienScaledY);
         }
     }
 
     public void handleLives(Graphics2D g) {
-
         switch(lives){
             case 3  :   g.drawImage(fullHeart, getWidth()-150, 50, null);
                         g.drawImage(fullHeart, getWidth()-100, 50, null);
