@@ -41,7 +41,7 @@ public class AlienGame extends GameCore{
 
     Sprite alien, astronaut;
 
-    Animation alienWalking, astronautWalking;
+    Animation alienWalking, astronautWalking, astronautIdle;
 
     TileMap tmap = new TileMap();
 
@@ -63,10 +63,13 @@ public class AlienGame extends GameCore{
         alienGame.run(false, screenWidth, screenHeight);
     }
 
+    /**
+     * loads background, animations, and the tilemap.
+     * tilemap is printed to the screen to ensure it is correct.
+     */
     public void init(){
         space = new ImageIcon("images/space.png").getImage();
         background = new ImageIcon("images/rockBackground.png").getImage();
-        tallRock = new ImageIcon("images/tallRock.png").getImage();
 
         fullHeart = new ImageIcon("images/fullHeart.png").getImage();
         emptyHeart = new ImageIcon("images/emptyHeart.png").getImage();
@@ -78,21 +81,29 @@ public class AlienGame extends GameCore{
 
         alienWalking = new Animation();
         alienWalking.loadAnimationFromSheet("images/alienWalkingCropped.png", 6, 1, 100);
+
         astronautWalking = new Animation();
         astronautWalking.loadAnimationSeries("images/walk.png", 3, 4, 100, 6, 5);
 
-        alien = new Sprite(alienWalking);
-        astronaut = new Sprite(astronautWalking);
+        astronautIdle = new Animation();
+        astronautIdle.loadAnimationSeries("images/walk.png", 3, 4, 100, 0, 1);
 
+        alien = new Sprite(alienWalking);
+
+        astronaut = new Sprite(astronautIdle);
         initialiseGame();
         System.out.println(tmap);
     }
 
+    /**
+     * starts by scaling and showing both astronaut and alien.
+     * adds the sprites to an array list of sprites: sprites.
+     */
     public void initialiseGame(){
         timeElapsed = 0;
         //scale the alien to be the width and height of a tile.
         alien.setScale(0.13f,0.058f);
-        alien.setPosition(350, 325);
+        alien.setPosition(350, 350);
         alien.setVelocity(0, 0);
         alien.show();
 
@@ -101,10 +112,18 @@ public class AlienGame extends GameCore{
         astronaut.setPosition(200, 325);
         astronaut.setVelocity(0, 0);
         astronaut.show();
+
         sprites.add(alien);
         sprites.add(astronaut);
     }
 
+    /**
+     * draws the current state of the game to the screen.
+     * debug allows for bounding boxes to be drawn around sprites.
+     * drawTransformed must be used since sprites are scaled.
+     * 
+     * @param g the Graphics2D object to be drawn
+     */
     public void draw(Graphics2D g){
         //make sure to draw "back to front": BackG->ForeG->sprite
         int xOffset = -(int)astronaut.getX() + 200;
@@ -114,8 +133,6 @@ public class AlienGame extends GameCore{
         
         g.drawImage(background, 0, 0, null);
 
-        g.drawImage(tallRock, 300, 229, null);
-
         //offsets applied to tilemap and drawn
         tmap.draw(g, xOffset, yOffset);
 
@@ -123,11 +140,11 @@ public class AlienGame extends GameCore{
         alien.drawTransformed(g);
         astronaut.setOffsets(xOffset, yOffset);
         astronaut.drawTransformed(g);
-/* 
-        String msg = "Parts collected: " + partsCollected;
+
+        String msg = "Parts collected: " + partsCollected+"/3";
         g.setColor(Color.WHITE);
-        g.drawString(msg, getWidth()-150, 50);
-*/
+        g.drawString(msg, 0, 50);
+
 
         handleLives(g);
 
@@ -140,19 +157,17 @@ public class AlienGame extends GameCore{
     }
 
 
+    /**
+     * update sprites, check for collisions.
+     * 
+     * @param timeElapsed the time elapsed since the game started.
+     */
     public void update(long timeElapsed){
         /*
         * TODO: 
         * iterate through sprite arraylist updating velocity
         * and animation speed for each sprite it concerns
          */
-
-        alien.setVelocityY(0);
-        alien.setAnimationSpeed(1.0f);
-        astronaut.setVelocityY(astronaut.getVelocityY() + (gravity*timeElapsed));
-        astronaut.setAnimationSpeed(1.0f);
-
-        alienWalk();
 
         if(moveRight){
             astronaut.setScale(0.92f, 0.7f);
@@ -165,6 +180,13 @@ public class AlienGame extends GameCore{
         else{
             astronaut.setVelocityX(0);
         }
+        alien.setVelocityY(0);
+        alien.setAnimationSpeed(1.0f);
+        astronaut.setVelocityY(astronaut.getVelocityY() + (gravity*timeElapsed));
+        astronaut.setAnimationSpeed(1.0f);
+
+        alienWalk();
+
         
         for(Sprite s : sprites){
             s.update(timeElapsed);
@@ -179,6 +201,14 @@ public class AlienGame extends GameCore{
         checkHorizontalCollision(astronaut);
     }
 
+    /**
+     * checks if the bounding boxes of two sprites overlap. 
+     * if the boxes overlap, a collision has occured between the sprites
+     * 
+     * @param s1 a sprite in the game
+     * @param s2 another sprite in the game
+     * @return
+     */
     public boolean boundingBoxCollision(Sprite s1, Sprite s2){
         return ((s1.getX() + s1.getWidth() > s2.getX()) &&
                 (s1.getX() < (s2.getX() + s2.getWidth())) &&
@@ -186,6 +216,12 @@ public class AlienGame extends GameCore{
                         (s1.getY() < s2.getY() + s2.getHeight())));
     }
 
+    /**
+     * checks for tile collisions on the horizontal plane.
+     * sprite- tile map collison
+     * 
+     * @param s the sprite for which the collison is checked
+     */
     public void checkHorizontalCollision(Sprite s){
         float tileWidth = tmap.getTileWidth();
         float tileHeight = tmap.getTileHeight();
@@ -198,14 +234,15 @@ public class AlienGame extends GameCore{
             int rightTile = (int)((s.getX() + s.getWidth()) / tileWidth);
 
             for(int y = topTile; y<=bottomTile; y++){
-                if(tmap.getTileChar(rightTile, y) != '.'){
-                    s.setX(rightTile * tileWidth - s.getWidth());
-                    s.setVelocityX(0);
-                }
-                else if(tmap.getTileChar(rightTile, y) == 'p'){
+                if(tmap.getTileChar(rightTile, y) == 'p'){
                     tmap.setTileChar('.', rightTile, y);
                     partsCollected++;
                 }
+                else if(tmap.getTileChar(rightTile, y) != '.'){
+                    s.setX(rightTile * tileWidth - s.getWidth());
+                    s.setVelocityX(0);
+                }
+                
             }
         }
 
@@ -222,10 +259,21 @@ public class AlienGame extends GameCore{
     }
     }
 
+/**
+ * checks for tile collision with the top of the sprite
+ * 
+ * @param s the sprite for which the collision is checked
+ */
     public void checkTopSpriteCollision(Sprite s){
         //TODO:
     }
 
+    /**
+     * checks for tile collision with the bottom of the player and the tile map
+     * 
+     * @param s the sprite 
+     * @param tmap the tilemap
+     */
     public void checkFloorTileCollision(Sprite s, TileMap tmap){
         float tileWidth = tmap.getTileWidth();
         float tileHeight = tmap.getTileHeight();
@@ -240,6 +288,8 @@ public class AlienGame extends GameCore{
             tmap.setTileChar('.', tileX, tileY);
             onGround = false;
             partsCollected++;
+        }else if (ch == 'x') {
+            onGround = false;
         }
         else if (ch != '.') {
             s.setY(tileY * tileHeight - s.getHeight());
@@ -250,29 +300,44 @@ public class AlienGame extends GameCore{
         }
     }
 
+    /**
+     * overrides the GameCore keyPressed to check custom keys
+     * 
+     * @param e the event that has been generated
+     */
     public void keyPressed(KeyEvent e){
         int keyPressed = e.getKeyCode();
 
         switch(keyPressed)
         {
-            case KeyEvent.VK_RIGHT  : moveRight = true; break;
-            case KeyEvent.VK_LEFT   : moveLeft = true;  break;
+            case KeyEvent.VK_RIGHT  : moveRight = true; astronaut.setAnimation(astronautWalking);break;
+            case KeyEvent.VK_LEFT   : moveLeft = true; astronaut.setAnimation(astronautWalking);  break;
             case KeyEvent.VK_UP     : if(onGround){astronaut.setVelocityY(-0.1f); onGround = false;} break;
-            case KeyEvent.VK_D      : debug = true; break;
+            case KeyEvent.VK_D      : debug = !debug; break;
             case KeyEvent.VK_L      : lives--;
+            case KeyEvent.VK_ESCAPE : stop(); break;
         }
     }
-
+ 
+    /**
+     * once a key has been pressed, what should happen when it is released?
+     * 
+     * @param e the event that has been generated
+     */
     public void keyReleased(KeyEvent e){
         int keyReleased = e.getKeyCode();
 
         switch (keyReleased) {
-            case KeyEvent.VK_RIGHT  : moveRight = false; break;
-            case KeyEvent.VK_LEFT   : moveLeft = false;  break;
+            case KeyEvent.VK_RIGHT  : moveRight = false; astronaut.setAnimation(astronautIdle);break;
+            case KeyEvent.VK_LEFT   : moveLeft = false; astronaut.setAnimation(astronautIdle); break;
                 
         }
     }
 
+    /**
+     * sets the alien on its way 
+     * checks if the alien has encountered an obstacle and turns them around if so
+     */
     public void alienWalk() {
         float tileWidth = tmap.getTileWidth();
         float tileHeight = tmap.getTileHeight();
@@ -295,6 +360,11 @@ public class AlienGame extends GameCore{
         }
     }
 
+    /**
+     * draws the player's remaining lives
+     * 
+     * @param g Graphics2D object to be drawn
+     */
     public void handleLives(Graphics2D g) {
         switch(lives){
             case 3  :   g.drawImage(fullHeart, getWidth()-150, 50, null);
