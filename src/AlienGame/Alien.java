@@ -6,10 +6,10 @@ import game2D.TileMap;
 public class Alien extends GameObject{
     private float walkSpeed = 0.01f;
     private int direction = 1;
-    private float scaleX;
-    private float scaleY;
+    private float scaleX = 0.13f;
+    private float scaleY = 0.058f;
 
-    public Alien(Sprite sprite, float scaleX, float scaleY) {
+    public Alien(Sprite sprite) {
         super(sprite);
         this.scaleX = scaleX;
         this.scaleY = scaleY;

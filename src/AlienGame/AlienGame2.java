@@ -78,8 +78,8 @@ public class AlienGame2 extends GameCore{
         astronautSprite = new Sprite(astronautIdle);
         alienSprite = new Sprite(alienWalking);
 
-        astronaut = new Astronaut(astronautSprite, 0.92f, 0.7f);
-        alien = new Alien(alienSprite, 0.13f, 0.058f);
+        astronaut = new Astronaut(astronautSprite);
+        alien = new Alien(alienSprite);
     }
 
     public void loadBackgroundImages(){

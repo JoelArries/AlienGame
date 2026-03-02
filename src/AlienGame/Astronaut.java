@@ -4,15 +4,13 @@ import game2D.Sprite;
 public class Astronaut extends GameObject{
     private float gravity = 0.0001f;
     private float walkSpeed = 0.05f;
-    private float scaleX;
-    private float scaleY;
+    private float scaleX = 0.92f;
+    private float scaleY = 0.7f;
     private boolean onGround;
     private boolean isMoving;
 
-    public Astronaut(Sprite sprite, float scaleX, float scaleY) {
+    public Astronaut(Sprite sprite) {
         super(sprite);
-        this.scaleX = scaleX;
-        this.scaleY = scaleY;
         sprite.setScale(scaleX, scaleY);
     }
     
