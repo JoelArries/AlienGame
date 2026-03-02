@@ -11,9 +11,11 @@ public class Alien extends GameObject{
 
     public Alien(Sprite sprite) {
         super(sprite);
-        this.scaleX = scaleX;
-        this.scaleY = scaleY;
         sprite.setScale(scaleX, scaleY);
+    }
+
+    public void setPosition(int xpos, int ypos){
+        sprite.setPosition(xpos, ypos);
     }
 
     public void alienWalk(TileMap tmap){

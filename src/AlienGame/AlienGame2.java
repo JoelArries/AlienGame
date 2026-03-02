@@ -47,6 +47,12 @@ public class AlienGame2 extends GameCore{
         System.out.println(level.getMap());
     }
 
+    public void initialiseGame(){
+        timeElapsed = 0;
+        astronaut.setPosition(200, 325);
+        alien.setPosition(350, 350);
+    }
+
     @Override
     public void draw(Graphics2D g) {
         int xOffset = -(int)astronaut.getSprite().getX() + 200;

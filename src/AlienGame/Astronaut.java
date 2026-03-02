@@ -43,4 +43,8 @@ public class Astronaut extends GameObject{
     public boolean isMoving(){
         return isMoving;
     }
+
+    public void setPosition(int xpos, int ypos){
+        sprite.setPosition(xpos, ypos);
+    }
 }
