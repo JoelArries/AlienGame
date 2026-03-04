@@ -40,6 +40,10 @@ public class Astronaut extends GameObject{
         this.onGround = onGround;
     }
 
+    public boolean getOnGround(){
+        return onGround;
+    }
+
     public boolean isMoving(){
         return isMoving;
     }

@@ -43,14 +43,14 @@ public class AlienGame2 extends GameCore{
 
         loadBackgroundImages();
 
-        //initialiseGame();
+        initialiseGame();
         System.out.println(level.getMap());
     }
 
     public void initialiseGame(){
         timeElapsed = 0;
         astronaut.setPosition(200, 325);
-        alien.setPosition(350, 350);
+        alien.setPosition(350, 325);
     }
 
     @Override
