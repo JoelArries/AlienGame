@@ -1,4 +1,5 @@
 package AlienGame;
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 
@@ -37,6 +38,10 @@ public class Level{
 
     public void draw(Graphics2D g, int xOffset, int yOffset){
         tmap.draw(g, xOffset, yOffset);
+
+        String msg = "Parts collected: " + partsCollected+"/3";
+        g.setColor(Color.WHITE);
+        g.drawString(msg, 0, 50);
 
         for (GameObject obj : gameObjects) {
             obj.draw(g, xOffset, yOffset);
