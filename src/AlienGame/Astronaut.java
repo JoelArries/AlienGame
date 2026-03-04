@@ -40,6 +40,12 @@ public class Astronaut extends GameObject{
         isMoving = false; movingLeft = false; movingRight = false;
     }
 
+    public void handleMovement(){
+        if(movingRight){moveRight();}
+        if(movingLeft){moveLeft();}
+        if(!movingLeft && !movingRight){stopMoving();}
+    }
+
     public void applyGravity(long timeElapsed){
         sprite.setVelocityY(sprite.getVelocityY() + (gravity * timeElapsed));
     }

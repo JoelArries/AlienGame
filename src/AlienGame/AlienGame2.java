@@ -74,11 +74,10 @@ public class AlienGame2 extends GameCore{
 
     public void update(long timeElapsed){
         astronaut.applyGravity(timeElapsed);
+        astronaut.handleMovement();
+        
         alien.alienWalk(level.getMap());
 
-        if(astronaut.movingRight){astronaut.moveRight();}
-        if(astronaut.movingLeft){astronaut.moveLeft();}
-        if(!astronaut.movingLeft && !astronaut.movingRight){astronaut.stopMoving();}
         level.update(timeElapsed);
     }
 
