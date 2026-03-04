@@ -4,7 +4,7 @@ import game2D.Sprite;
 import game2D.TileMap;
 
 public class Alien extends GameObject{
-    private float walkSpeed = 0.01f;
+    private float walkSpeed = 0.05f;
     private int direction = 1;
     private float scaleX = 0.13f;
     private float scaleY = 0.058f;

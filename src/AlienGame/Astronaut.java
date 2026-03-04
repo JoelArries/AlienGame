@@ -8,6 +8,8 @@ public class Astronaut extends GameObject{
     private float scaleY = 0.7f;
     private boolean onGround;
     private boolean isMoving;
+    public boolean movingLeft;
+    public boolean movingRight;
 
     public Astronaut(Sprite sprite) {
         super(sprite);
@@ -17,19 +19,25 @@ public class Astronaut extends GameObject{
     public void moveRight(){
         sprite.setVelocityX(walkSpeed);
         isMoving = true;
+        movingRight = true;
+        sprite.setScale(scaleX, scaleY);
+        
     }
 
     public void moveLeft(){
         sprite.setVelocityX(-walkSpeed);
         isMoving = true;
+        movingLeft = true;
+        sprite.setScale(-scaleX, scaleY);
     }
 
     public void jump(){
         if(onGround){sprite.setVelocityY(-0.1f); onGround = false;}
     }
 
-    public void stop(){
-        sprite.stop();
+    public void stopMoving(){
+        sprite.setVelocityX(0);
+        isMoving = false; movingLeft = false; movingRight = false;
     }
 
     public void applyGravity(long timeElapsed){

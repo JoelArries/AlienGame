@@ -2,6 +2,7 @@ package AlienGame;
 
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.event.KeyEvent;
 
 import javax.swing.ImageIcon;
 
@@ -62,12 +63,22 @@ public class AlienGame2 extends GameCore{
         g.drawImage(background, 0, 0, null);
 
         level.draw(g, xOffset, yOffset);
+
+        if(astronautSprite.getVelocityX() != 0 ){
+            astronautSprite.setAnimation(astronautWalking);
+        }
+        else{
+            astronautSprite.setAnimation(astronautIdle);
+        }
     }
 
     public void update(long timeElapsed){
         astronaut.applyGravity(timeElapsed);
         alien.alienWalk(level.getMap());
 
+        if(astronaut.movingRight){astronaut.moveRight();}
+        if(astronaut.movingLeft){astronaut.moveLeft();}
+        if(!astronaut.movingLeft && !astronaut.movingRight){astronaut.stopMoving();}
         level.update(timeElapsed);
     }
 
@@ -95,5 +106,27 @@ public class AlienGame2 extends GameCore{
         fullHeart = new ImageIcon("images/fullHeart.png").getImage();
         emptyHeart = new ImageIcon("images/emptyHeart.png").getImage();
 
+    }
+
+    public void keyPressed(KeyEvent e){
+        int keyPressed = e.getKeyCode();
+
+        switch (keyPressed) {
+            case KeyEvent.VK_RIGHT  :   astronaut.movingRight = true; break;
+            case KeyEvent.VK_LEFT   :   astronaut.movingLeft = true; break;
+            case KeyEvent.VK_UP     :   astronaut.jump(); break;
+            case KeyEvent.VK_ESCAPE :   stop(); break;
+            default                 :   break;
+        }
+    }
+
+    public void keyReleased(KeyEvent e){
+        int keyReleased = e.getKeyCode();
+
+        switch (keyReleased) {
+            case KeyEvent.VK_RIGHT  :   astronaut.movingRight = false; break;
+            case KeyEvent.VK_LEFT   :   astronaut.movingLeft = false; break;
+            default                 :   break;
+        }
     }
 }
