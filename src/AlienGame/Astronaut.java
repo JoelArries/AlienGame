@@ -2,14 +2,16 @@ package AlienGame;
 import game2D.Sprite;
 
 public class Astronaut extends GameObject{
+    private int lives = 3;
     private float gravity = 0.0001f;
     private float walkSpeed = 0.05f;
     private float scaleX = 0.92f;
     private float scaleY = 0.7f;
     private boolean onGround;
-    private boolean isMoving;
     public boolean movingLeft;
     public boolean movingRight;
+
+
 
     public Astronaut(Sprite sprite) {
         super(sprite);
@@ -18,7 +20,6 @@ public class Astronaut extends GameObject{
     
     public void moveRight(){
         sprite.setVelocityX(walkSpeed);
-        isMoving = true;
         movingRight = true;
         sprite.setScale(scaleX, scaleY);
         
@@ -26,7 +27,6 @@ public class Astronaut extends GameObject{
 
     public void moveLeft(){
         sprite.setVelocityX(-walkSpeed);
-        isMoving = true;
         movingLeft = true;
         sprite.setScale(-scaleX, scaleY);
     }
@@ -37,7 +37,7 @@ public class Astronaut extends GameObject{
 
     public void stopMoving(){
         sprite.setVelocityX(0);
-        isMoving = false; movingLeft = false; movingRight = false;
+        movingLeft = false; movingRight = false;
     }
 
     public void handleMovement(){
@@ -58,11 +58,15 @@ public class Astronaut extends GameObject{
         return onGround;
     }
 
-    public boolean isMoving(){
-        return isMoving;
-    }
-
     public void setPosition(int xpos, int ypos){
         sprite.setPosition(xpos, ypos);
+    }
+
+    public void loseLife(){
+        lives--;
+    }
+
+    public int getLives(){
+        return lives;
     }
 }

@@ -70,15 +70,18 @@ public class AlienGame2 extends GameCore{
         else{
             astronautSprite.setAnimation(astronautIdle);
         }
+
+        handleLives(g);
     }
 
     public void update(long timeElapsed){
         astronaut.applyGravity(timeElapsed);
         astronaut.handleMovement();
-        
+
         alien.alienWalk(level.getMap());
 
         level.update(timeElapsed);
+
     }
 
     public void loadObjectAnimations(){
@@ -126,6 +129,32 @@ public class AlienGame2 extends GameCore{
             case KeyEvent.VK_RIGHT  :   astronaut.movingRight = false; break;
             case KeyEvent.VK_LEFT   :   astronaut.movingLeft = false; break;
             default                 :   break;
+        }
+    }
+
+    public void handleLives(Graphics2D g) {
+        int lives = astronaut.getLives();
+
+        switch(lives){
+            case 3  :   g.drawImage(fullHeart, getWidth()-150, 50, null);
+                        g.drawImage(fullHeart, getWidth()-100, 50, null);
+                        g.drawImage(fullHeart, getWidth()-50, 50, null); 
+                        break;
+           
+            case 2  :   g.drawImage(fullHeart, getWidth()-150, 50, null);
+                        g.drawImage(fullHeart, getWidth()-100, 50, null);
+                        g.drawImage(emptyHeart, getWidth()-50, 50, null); 
+                        break;
+
+            case 1  :   g.drawImage(fullHeart, getWidth()-150, 50, null);
+                        g.drawImage(emptyHeart, getWidth()-100, 50, null);
+                        g.drawImage(emptyHeart, getWidth()-50, 50, null); 
+                        break;
+
+            case 0  :   g.drawImage(emptyHeart, getWidth()-150, 50, null);
+                        g.drawImage(emptyHeart, getWidth()-100, 50, null);
+                        g.drawImage(emptyHeart, getWidth()-50, 50, null); 
+                        break;
         }
     }
 }
