@@ -15,11 +15,24 @@ public class Level{
         tmap.loadMap("maps", mapName + ".txt");
         gameObjects = new ArrayList<>();
     }
+    //TODO:
+    //add any more gameObjects to the JavaDoc if they are implemented.
 
+    /**
+     * Add a GameObject to the gameObjects ArrayList. 
+     * GameObjects can be Aliens, Astronauts, 
+     * 
+     * @param obj the object to add
+     */
     public void addObject(GameObject obj){
         gameObjects.add(obj);
     }
 
+    /**
+     * Update game objects, check for tile and sprite-sprite collision
+     * 
+     * @param timeElapsed
+     */
     public void update(long timeElapsed){
         for(GameObject obj1 : gameObjects){
             obj1.update(timeElapsed);
@@ -29,13 +42,21 @@ public class Level{
             }
             for(GameObject obj2 : gameObjects){
                 if(obj1 != obj2 && boundingBoxCollision(obj1, obj2)){
-                    if(obj1 instanceof Astronaut){obj1.getSprite().setPosition(200, 325); ((Astronaut)obj1).loseLife();}
-                    if(obj2 instanceof Astronaut){obj2.getSprite().setPosition(200, 325); ((Astronaut)obj2).loseLife();}
+                    if(obj1 instanceof Astronaut){((Astronaut)obj1).loseLife();}
+                    if(obj2 instanceof Astronaut){((Astronaut)obj2).loseLife();}
                 }
             }
         }
     }
 
+    /**
+     * Draw the Tile Map, GameObjects, and a message informing the player of
+     * how many parts have been collected.
+     * 
+     * @param g the Graphics2D object to draw
+     * @param xOffset The offset applied to the Tile Map in the X-direction
+     * @param yOffset The offset applied to the Tile Map in the Y-direction
+     */
     public void draw(Graphics2D g, int xOffset, int yOffset){
         tmap.draw(g, xOffset, yOffset);
 
@@ -48,6 +69,12 @@ public class Level{
         }
     }
 
+    /**
+     * Check for a collision between the foot of Astronaut and the Tile Map.
+     * Updates the value of partsCollected when the astronaut collides with a ship part.
+     * 
+     * @param ast the Astronaut object for which the collisions are handled.
+     */
     private void checkFloorTileCollision(Astronaut ast){
         Sprite s = ast.getSprite();
 
@@ -66,6 +93,7 @@ public class Level{
             partsCollected++;
         }else if (ch == 'x') {
             ast.setOnGround(false);
+            ast.loseLife();
         }
         else if (ch != '.') {
             s.setY(tileY * tileHeight - s.getHeight());
@@ -77,6 +105,12 @@ public class Level{
     
     }
 
+    /**
+     * Check for horizontal collisions between the Astronaut and the Tile Map.
+     * Updates the value of partsCollected when the Astronaut collides with a ship part.
+     * 
+     * @param ast The Astronaut object for which the collisions are handled.
+     */
     public void checkHorizontalCollision(Astronaut ast){
         Sprite s = ast.getSprite();
         float tileWidth = tmap.getTileWidth();
@@ -115,6 +149,13 @@ public class Level{
         }
     }
 
+    /**
+     * Detect overlap of two GameObjects' bounding boxes to determine a collision.
+     * 
+     * @param obj1 GameObject 1
+     * @param obj2 GameObject 2
+     * @return true if collision, false if not
+     */
     public boolean boundingBoxCollision(GameObject obj1, GameObject obj2){
         Sprite s1 = obj1.getSprite();
         Sprite s2 = obj2.getSprite();
@@ -125,6 +166,10 @@ public class Level{
                         (s1.getY() < s2.getY() + s2.getHeight())));
     }
 
+    /**
+     * 
+     * @return the TileMap
+     */
     public TileMap getMap(){
         return tmap;
     }

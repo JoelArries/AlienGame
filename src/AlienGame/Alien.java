@@ -14,10 +14,21 @@ public class Alien extends GameObject{
         sprite.setScale(scaleX, scaleY);
     }
 
+    /**
+     * Set the position of the Alien.
+     * @param xpos The X-Position of the Alien.
+     * @param ypos The Y-Position of the Alien.
+     */
     public void setPosition(int xpos, int ypos){
         sprite.setPosition(xpos, ypos);
     }
 
+    /**
+     * Set the Alien on it's way. 
+     * Handles collisions with the Alien and the Tile Map,
+     * when a collision is detected the Alien will turn and walk the other way.
+     * @param tmap
+     */
     public void alienWalk(TileMap tmap){
         float tileWidth = tmap.getTileWidth();
         float tileHeight = tmap.getTileHeight();

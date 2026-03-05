@@ -52,8 +52,15 @@ public class AlienGame2 extends GameCore{
         timeElapsed = 0;
         astronaut.setPosition(200, 325);
         alien.setPosition(350, 325);
+        alien.alienWalk(level.getMap());
     }
 
+    /**
+     * The overriden draw method- used to draw the state of the game to the screen.
+     * Set offsets, draw background images and hearts, determine which Astronaut animation should be used.
+     * 
+     * @param g The Graphics2D object to be drawn.
+     */
     @Override
     public void draw(Graphics2D g) {
         int xOffset = -(int)astronaut.getSprite().getX() + 200;
@@ -74,16 +81,21 @@ public class AlienGame2 extends GameCore{
         handleLives(g);
     }
 
+    /**
+     * Apply gravity to the Astronaut and handle movement requested by key presses and update the level.
+     */
     public void update(long timeElapsed){
         astronaut.applyGravity(timeElapsed);
         astronaut.handleMovement();
 
-        alien.alienWalk(level.getMap());
 
         level.update(timeElapsed);
 
     }
 
+    /**
+     * Load animations for each sprite to be used when needed.
+     */
     public void loadObjectAnimations(){
         astronautWalking = new Animation();
         astronautWalking.loadAnimationSeries("images/walk.png", 3, 4, 100, 6, 5);
@@ -101,6 +113,9 @@ public class AlienGame2 extends GameCore{
         alien = new Alien(alienSprite);
     }
 
+    /**
+     * Load the background images to be drawn.
+     */
     public void loadBackgroundImages(){
         space = new ImageIcon("images/space.png").getImage();
         background = new ImageIcon("images/rockBackground.png").getImage();
@@ -110,6 +125,9 @@ public class AlienGame2 extends GameCore{
 
     }
 
+    /*
+     * What should happen when a key is pressed?
+     */
     public void keyPressed(KeyEvent e){
         int keyPressed = e.getKeyCode();
 
@@ -122,6 +140,9 @@ public class AlienGame2 extends GameCore{
         }
     }
 
+    /**
+     * What should happen when a key is released?
+     */
     public void keyReleased(KeyEvent e){
         int keyReleased = e.getKeyCode();
 
@@ -132,6 +153,10 @@ public class AlienGame2 extends GameCore{
         }
     }
 
+    /**
+     * Draw the number of full and empty hearts to the screen according to how many lives remain.
+     * @param g
+     */
     public void handleLives(Graphics2D g) {
         int lives = astronaut.getLives();
 
