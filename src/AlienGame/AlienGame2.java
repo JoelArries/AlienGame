@@ -1,10 +1,12 @@
 package AlienGame;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.event.KeyEvent;
 
 import javax.swing.ImageIcon;
+import javax.swing.SpinnerDateModel;
 
 import game2D.*;
 
@@ -12,8 +14,9 @@ public class AlienGame2 extends GameCore{
     private Level level;
     private Astronaut astronaut;
     private Alien alien;
-    private Sprite astronautSprite, alienSprite;
-    private Animation alienWalking, astronautWalking, astronautIdle;
+    private Tornado tornado;
+    private Sprite astronautSprite, alienSprite, tornadoSprite;
+    private Animation alienWalking, astronautWalking, astronautIdle, tornadoAnimation;
 
     static int screenWidth = 768;
     static int screenHeight = 576;
@@ -35,9 +38,11 @@ public class AlienGame2 extends GameCore{
 
         astronaut.getSprite().setPosition(200, 325);
         alien.getSprite().setPosition(350, 350);
+        tornado.getSprite().setPosition(695, 280);
 
         level.addObject(alien);
         level.addObject(astronaut);
+        level.addObject(tornado);
 
         setSize(level.getMap().getPixelWidth()/4, level.getMap().getPixelHeight());
         setVisible(true);
@@ -52,7 +57,6 @@ public class AlienGame2 extends GameCore{
         timeElapsed = 0;
         astronaut.setPosition(200, 325);
         alien.setPosition(350, 325);
-        alien.alienWalk(level.getMap());
     }
 
     /**
@@ -68,7 +72,7 @@ public class AlienGame2 extends GameCore{
 
         g.drawImage(space, 0, 0, null);
         g.drawImage(background, 0, 0, null);
-
+    
         level.draw(g, xOffset, yOffset);
 
         if(astronautSprite.getVelocityX() != 0 ){
@@ -77,17 +81,26 @@ public class AlienGame2 extends GameCore{
         else{
             astronautSprite.setAnimation(astronautIdle);
         }
-
         handleLives(g);
+
+        String msg = "X: " + astronaut.getSprite().getX() + ". Y: " + astronaut.getSprite().getY();
+        g.setColor(Color.WHITE);
+        g.drawString(msg, 0, 100);
     }
 
     /**
      * Apply gravity to the Astronaut and handle movement requested by key presses and update the level.
      */
     public void update(long timeElapsed){
-        astronaut.applyGravity(timeElapsed);
+        if(tornado.getX()+20 >= astronaut.getSprite().getX() && tornado.getX()-30 <= astronaut.getSprite().getX()){
+            float yDiff = tornado.getSprite().getY() - astronaut.getSprite().getY();
+            astronaut.applyGravity(timeElapsed, yDiff);
+        }
+        else{
+            astronaut.applyGravity(timeElapsed);
+        }
         astronaut.handleMovement();
-
+        alien.alienWalk(level.getMap());
 
         level.update(timeElapsed);
 
@@ -106,9 +119,13 @@ public class AlienGame2 extends GameCore{
         alienWalking = new Animation();
         alienWalking.loadAnimationFromSheet("images/alienWalkingCropped.png", 6, 1, 100);
         
+        tornadoAnimation = new Animation();
+        tornadoAnimation.loadAnimationFromSheet("images/newTornadoCopy.png", 3, 3, 100);
+
+        tornadoSprite = new Sprite(tornadoAnimation);
         astronautSprite = new Sprite(astronautIdle);
         alienSprite = new Sprite(alienWalking);
-
+        tornado = new Tornado(tornadoSprite);
         astronaut = new Astronaut(astronautSprite);
         alien = new Alien(alienSprite);
     }

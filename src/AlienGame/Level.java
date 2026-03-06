@@ -91,10 +91,11 @@ public class Level{
             tmap.setTileChar('.', tileX, tileY);
             ast.setOnGround(false);
             partsCollected++;
-        }else if (ch == 'x') {
+        }
+        /*else if (ch == 'x') {
             ast.setOnGround(false);
             ast.loseLife();
-        }
+        }   Shouldnt be needed since the tornado is there, cba rewriting it if not though */
         else if (ch != '.') {
             s.setY(tileY * tileHeight - s.getHeight());
             s.setVelocityY(0);

@@ -62,10 +62,21 @@ public class Astronaut extends GameObject{
     }
 
     /**
-     * Apply our Martian gravity to the Astronaut.
+     * Apply inverse gravity to the astronaut dependent on their distance from the tornado.
      * 
      * @param timeElapsed
      */
+    public void applyGravity(long timeElapsed, float yDiff){  
+        if(yDiff <= 240){
+            float tornadoStrength = (220-yDiff)/10;
+            sprite.setVelocityY((sprite.getVelocityY() + (-tornadoStrength * gravity)));
+        }
+        else{
+            applyGravity(timeElapsed);
+        }
+    }
+
+
     public void applyGravity(long timeElapsed){
         sprite.setVelocityY(sprite.getVelocityY() + (gravity * timeElapsed));
     }
