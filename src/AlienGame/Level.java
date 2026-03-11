@@ -64,9 +64,16 @@ public class Level{
     public void draw(Graphics2D g, int xOffset, int yOffset){
         tmap.draw(g, xOffset, yOffset);
 
-        String msg = "Parts collected: " + partsCollected+"/3";
+        String Msg = "Parts Collected: ";
         g.setColor(Color.WHITE);
-        g.drawString(msg, 0, 50);
+        if(partsCollected < 3){
+            Msg = Msg + partsCollected+"/3";
+        }
+        else{
+            Msg = "All parts collected! Board the spaceship.";
+        }
+
+        g.drawString(Msg, 0, 50);
 
         for (GameObject obj : gameObjects) {
             obj.draw(g, xOffset, yOffset);
@@ -99,7 +106,7 @@ public class Level{
         char ch = tmap.getTileChar(tileX, tileY);
         //TODO:
         //check for other spaceship parts. If part is final part && partsCollected == 3 -> draw spaceship at end.
-        if (ch == 'p' || ch == 'q') {
+        if (ch == 'p' || ch == 'q' || ch=='s') {
             tmap.setTileChar('.', tileX, tileY);
             ast.setOnGround(false);
             partsCollected++;
@@ -137,7 +144,7 @@ public class Level{
             int rightTile = (int)((s.getX() + s.getWidth()) / tileWidth);
 
             for(int y = topTile; y<=bottomTile; y++){
-                if(tmap.getTileChar(rightTile, y) == 'p' || tmap.getTileChar(rightTile, y) == 'q'){
+                if(tmap.getTileChar(rightTile, y) == 'p' || tmap.getTileChar(rightTile, y) == 'q' || tmap.getTileChar(rightTile, y) == 's'){
                     tmap.setTileChar('.', rightTile, y);
                     partsCollected++;
                 }

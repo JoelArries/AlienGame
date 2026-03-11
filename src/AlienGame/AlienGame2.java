@@ -86,10 +86,12 @@ public class AlienGame2 extends GameCore{
             astronautSprite.setAnimation(astronautIdle);
         }
         handleLives(g);
-
+/* 
         String msg = "X: " + astronaut.getSprite().getX() + ". Y: " + astronaut.getSprite().getY();
         g.setColor(Color.WHITE);
         g.drawString(msg, 0, 100);
+    
+*/
     }
 
     /**
