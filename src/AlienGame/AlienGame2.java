@@ -95,8 +95,6 @@ public class AlienGame2 extends GameCore{
     /**
      * Apply gravity to the Astronaut and handle movement requested by key presses and update the level.
      */
-    //TODO:
-    //change this to be applicable to any tornado
     public void update(long timeElapsed){
         float yDiff = 0;
         boolean inTornado = false;
@@ -108,7 +106,7 @@ public class AlienGame2 extends GameCore{
                 float tornadoX = tornado.getSprite().getX();
                 float astronautX = astronaut.getSprite().getX();
 
-                if(tornadoX + 20 >= astronautX && tornadoX - 30 <= astronautX){
+                if(tornadoX + 30 >= astronautX && tornadoX - 30 <= astronautX){
                     yDiff = tornado.getSprite().getY() - astronaut.getSprite().getY();
                     inTornado = true;
                     break;
