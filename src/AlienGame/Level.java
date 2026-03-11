@@ -28,6 +28,10 @@ public class Level{
         gameObjects.add(obj);
     }
 
+    public ArrayList<GameObject> getObjects(){
+        return gameObjects;
+    }
+
     /**
      * Update game objects, check for tile and sprite-sprite collision
      * 
@@ -69,13 +73,21 @@ public class Level{
         }
     }
 
+    public void checkTopTileCollision(Astronaut ast){
+        Sprite s = ast.getSprite();
+
+        float tileWidth = tmap.getTileWidth();
+        float tileHeight = tmap.getTileHeight();
+
+    }
+
     /**
      * Check for a collision between the foot of Astronaut and the Tile Map.
      * Updates the value of partsCollected when the astronaut collides with a ship part.
      * 
      * @param ast the Astronaut object for which the collisions are handled.
      */
-    private void checkFloorTileCollision(Astronaut ast){
+    public void checkFloorTileCollision(Astronaut ast){
         Sprite s = ast.getSprite();
 
         float tileWidth = tmap.getTileWidth();
@@ -87,7 +99,7 @@ public class Level{
         char ch = tmap.getTileChar(tileX, tileY);
         //TODO:
         //check for other spaceship parts. If part is final part && partsCollected == 3 -> draw spaceship at end.
-        if (ch == 'p') {
+        if (ch == 'p' || ch == 'q') {
             tmap.setTileChar('.', tileX, tileY);
             ast.setOnGround(false);
             partsCollected++;
@@ -125,7 +137,7 @@ public class Level{
             int rightTile = (int)((s.getX() + s.getWidth()) / tileWidth);
 
             for(int y = topTile; y<=bottomTile; y++){
-                if(tmap.getTileChar(rightTile, y) == 'p'){
+                if(tmap.getTileChar(rightTile, y) == 'p' || tmap.getTileChar(rightTile, y) == 'q'){
                     tmap.setTileChar('.', rightTile, y);
                     partsCollected++;
                 }

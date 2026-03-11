@@ -6,16 +6,15 @@ import java.awt.Image;
 import java.awt.event.KeyEvent;
 
 import javax.swing.ImageIcon;
-import javax.swing.SpinnerDateModel;
 
 import game2D.*;
 
 public class AlienGame2 extends GameCore{
     private Level level;
     private Astronaut astronaut;
-    private Alien alien;
-    private Tornado tornado;
-    private Sprite astronautSprite, alienSprite, tornadoSprite;
+    private Alien alien1, alien2;
+    private Tornado tornado1, tornado2;
+    private Sprite astronautSprite, alien1Sprite, alien2Sprite, tornado1Sprite, tornado2Sprite;
     private Animation alienWalking, astronautWalking, astronautIdle, tornadoAnimation;
 
     static int screenWidth = 768;
@@ -37,12 +36,16 @@ public class AlienGame2 extends GameCore{
         loadObjectAnimations();
 
         astronaut.getSprite().setPosition(200, 325);
-        alien.getSprite().setPosition(350, 350);
-        tornado.getSprite().setPosition(695, 280);
+        alien1.getSprite().setPosition(350, 350);
+        alien2.getSprite().setPosition(870, 110);
+        tornado1.getSprite().setPosition(695, 280);
+        tornado2.getSprite().setPosition(1110, 280);
 
-        level.addObject(alien);
+        level.addObject(alien1);
         level.addObject(astronaut);
-        level.addObject(tornado);
+        level.addObject(tornado1);
+        level.addObject(tornado2);
+        level.addObject(alien2);
 
         setSize(level.getMap().getPixelWidth()/4, level.getMap().getPixelHeight());
         setVisible(true);
@@ -56,7 +59,8 @@ public class AlienGame2 extends GameCore{
     public void initialiseGame(){
         timeElapsed = 0;
         astronaut.setPosition(200, 325);
-        alien.setPosition(350, 325);
+        alien1.setPosition(350, 325);
+        alien2.setPosition(870, 103);
     }
 
     /**
@@ -91,19 +95,38 @@ public class AlienGame2 extends GameCore{
     /**
      * Apply gravity to the Astronaut and handle movement requested by key presses and update the level.
      */
+    //TODO:
+    //change this to be applicable to any tornado
     public void update(long timeElapsed){
-        if(tornado.getX()+20 >= astronaut.getSprite().getX() && tornado.getX()-30 <= astronaut.getSprite().getX()){
-            float yDiff = tornado.getSprite().getY() - astronaut.getSprite().getY();
+        float yDiff = 0;
+        boolean inTornado = false;
+
+        for(GameObject obj: level.getObjects()){
+            if(obj instanceof Tornado){
+                Tornado tornado = (Tornado)obj;
+
+                float tornadoX = tornado.getSprite().getX();
+                float astronautX = astronaut.getSprite().getX();
+
+                if(tornadoX + 20 >= astronautX && tornadoX - 30 <= astronautX){
+                    yDiff = tornado.getSprite().getY() - astronaut.getSprite().getY();
+                    inTornado = true;
+                    break;
+                }
+            }
+        }
+
+        if(inTornado){
             astronaut.applyGravity(timeElapsed, yDiff);
         }
         else{
             astronaut.applyGravity(timeElapsed);
         }
         astronaut.handleMovement();
-        alien.alienWalk(level.getMap());
+        alien1.alienWalk(level.getMap());
+        alien2.alienWalk(level.getMap());
 
         level.update(timeElapsed);
-
     }
 
     /**
@@ -122,12 +145,16 @@ public class AlienGame2 extends GameCore{
         tornadoAnimation = new Animation();
         tornadoAnimation.loadAnimationFromSheet("images/newTornadoCopy.png", 3, 3, 100);
 
-        tornadoSprite = new Sprite(tornadoAnimation);
+        tornado1Sprite = new Sprite(tornadoAnimation);
+        tornado2Sprite = new Sprite(tornadoAnimation);
         astronautSprite = new Sprite(astronautIdle);
-        alienSprite = new Sprite(alienWalking);
-        tornado = new Tornado(tornadoSprite);
+        alien1Sprite = new Sprite(alienWalking);
+        alien2Sprite = new Sprite(alienWalking);
+        tornado1 = new Tornado(tornado1Sprite);
+        tornado2 = new Tornado(tornado2Sprite);
         astronaut = new Astronaut(astronautSprite);
-        alien = new Alien(alienSprite);
+        alien1 = new Alien(alien1Sprite);
+        alien2 = new Alien(alien2Sprite);
     }
 
     /**
