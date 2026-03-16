@@ -8,6 +8,7 @@ public class Alien extends GameObject{
     private int direction = 1;
     private float scaleX = 0.13f;
     private float scaleY = 0.058f;
+    private boolean alive = true;
 
     public Alien(Sprite sprite) {
         super(sprite);
@@ -49,6 +50,14 @@ public class Alien extends GameObject{
             direction *= -1;
             sprite.setScale(scaleX * direction, scaleY);
         }
+    }
+
+    public boolean isAlive(){
+        return alive;
+    }
+
+    public void die(){
+        alive = false;
     }
     
 }

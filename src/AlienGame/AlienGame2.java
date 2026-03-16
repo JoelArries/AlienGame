@@ -12,13 +12,15 @@ import game2D.*;
 public class AlienGame2 extends GameCore{
     private Level level;
     private Astronaut astronaut;
-    private Alien alien1, alien2;
+    private Alien alien1, alien2, alien3;
     private Tornado tornado1, tornado2;
-    private Sprite astronautSprite, alien1Sprite, alien2Sprite, tornado1Sprite, tornado2Sprite;
-    private Animation alienWalking, astronautWalking, astronautIdle, tornadoAnimation;
+    private Sprite astronautSprite, alien1Sprite, alien2Sprite, alien3Sprite, tornado1Sprite, tornado2Sprite, rocketSprite;
+    private Animation alienWalking, astronautWalking, astronautIdle, tornadoAnimation, rocketAnimation;
 
     static int screenWidth = 768;
     static int screenHeight = 576;
+
+    private boolean drawBoundingBox = false;
 
     long timeElapsed;
 
@@ -36,16 +38,19 @@ public class AlienGame2 extends GameCore{
         loadObjectAnimations();
 
         astronaut.getSprite().setPosition(200, 325);
-        alien1.getSprite().setPosition(350, 350);
+        alien1.getSprite().setPosition(350, 325);
         alien2.getSprite().setPosition(870, 110);
+        alien3.getSprite().setPosition(1200, 325);
         tornado1.getSprite().setPosition(695, 280);
         tornado2.getSprite().setPosition(1110, 280);
 
         level.addObject(alien1);
+        level.addObject(alien2);
+        level.addObject(alien3);
         level.addObject(astronaut);
         level.addObject(tornado1);
         level.addObject(tornado2);
-        level.addObject(alien2);
+        
 
         setSize(level.getMap().getPixelWidth()/4, level.getMap().getPixelHeight());
         setVisible(true);
@@ -61,6 +66,7 @@ public class AlienGame2 extends GameCore{
         astronaut.setPosition(200, 325);
         alien1.setPosition(350, 325);
         alien2.setPosition(870, 103);
+        alien3.setPosition(1200, 325);
     }
 
     /**
@@ -86,12 +92,16 @@ public class AlienGame2 extends GameCore{
             astronautSprite.setAnimation(astronautIdle);
         }
         handleLives(g);
-/* 
+
         String msg = "X: " + astronaut.getSprite().getX() + ". Y: " + astronaut.getSprite().getY();
         g.setColor(Color.WHITE);
         g.drawString(msg, 0, 100);
-    
-*/
+        
+        if(drawBoundingBox){
+            astronautSprite.drawBoundingBox(g);
+            astronautSprite.drawBoundingCircle(g);
+        }
+
     }
 
     /**
@@ -125,6 +135,7 @@ public class AlienGame2 extends GameCore{
         astronaut.handleMovement();
         alien1.alienWalk(level.getMap());
         alien2.alienWalk(level.getMap());
+        alien3.alienWalk(level.getMap());
 
         level.update(timeElapsed);
     }
@@ -140,21 +151,25 @@ public class AlienGame2 extends GameCore{
         astronautIdle.loadAnimationSeries("images/walk.png", 3, 4, 100, 0, 1);
         
         alienWalking = new Animation();
-        alienWalking.loadAnimationFromSheet("images/alienWalkingCropped.png", 6, 1, 100);
+        alienWalking.loadAnimationFromSheet("images/alienWalkingCropped.png", 6, 1, 150);
         
         tornadoAnimation = new Animation();
         tornadoAnimation.loadAnimationFromSheet("images/newTornadoCopy.png", 3, 3, 100);
 
         tornado1Sprite = new Sprite(tornadoAnimation);
         tornado2Sprite = new Sprite(tornadoAnimation);
-        astronautSprite = new Sprite(astronautIdle);
-        alien1Sprite = new Sprite(alienWalking);
-        alien2Sprite = new Sprite(alienWalking);
         tornado1 = new Tornado(tornado1Sprite);
         tornado2 = new Tornado(tornado2Sprite);
+
+        astronautSprite = new Sprite(astronautIdle);
         astronaut = new Astronaut(astronautSprite);
+
+        alien1Sprite = new Sprite(alienWalking);
+        alien2Sprite = new Sprite(alienWalking);
+        alien3Sprite = new Sprite(alienWalking);
         alien1 = new Alien(alien1Sprite);
         alien2 = new Alien(alien2Sprite);
+        alien3 = new Alien(alien3Sprite);
     }
 
     /**
@@ -180,6 +195,7 @@ public class AlienGame2 extends GameCore{
             case KeyEvent.VK_LEFT   :   astronaut.movingLeft = true; break;
             case KeyEvent.VK_UP     :   astronaut.jump(); break;
             case KeyEvent.VK_ESCAPE :   stop(); break;
+            case KeyEvent.VK_D      :   drawBoundingBox = !drawBoundingBox; break;
             default                 :   break;
         }
     }

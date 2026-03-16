@@ -396,7 +396,8 @@ public class Sprite {
 
 		Image img = getImage();
 		
-    	g.drawArc((int)x+xoff,(int)y+yoff,img.getWidth(null),img.getHeight(null),0, 360);
+    	//g.drawArc((int)x+xoff,(int)y+yoff,img.getWidth(null),img.getHeight(null),0, 360);
+        g.drawArc((int)x + xoff, (int)y + yoff, getWidth(), getHeight(), 0, 360);
     }
     
 	/**

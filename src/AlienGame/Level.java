@@ -9,14 +9,14 @@ public class Level{
     private TileMap tmap;
     private ArrayList<GameObject> gameObjects;
     private int partsCollected;
+    private int topTile = 0;
 
     public Level(String mapName){
         tmap = new TileMap();
         tmap.loadMap("maps", mapName + ".txt");
         gameObjects = new ArrayList<>();
     }
-    //TODO:
-    //add any more gameObjects to the JavaDoc if they are implemented.
+
 
     /**
      * Add a GameObject to the gameObjects ArrayList. 
@@ -37,21 +37,116 @@ public class Level{
      * 
      * @param timeElapsed
      */
+    /* 
     public void update(long timeElapsed){
         for(GameObject obj1 : gameObjects){
             obj1.update(timeElapsed);
             if(obj1 instanceof Astronaut){
                 checkFloorTileCollision((Astronaut)obj1);
                 checkHorizontalCollision((Astronaut)obj1);
+                checkTopTileCollision((Astronaut)obj1);
             }
             for(GameObject obj2 : gameObjects){
                 if(obj1 != obj2 && boundingBoxCollision(obj1, obj2)){
-                    if(obj1 instanceof Astronaut){((Astronaut)obj1).loseLife();}
-                    if(obj2 instanceof Astronaut){((Astronaut)obj2).loseLife();}
+                    if(obj1 instanceof Astronaut && obj2 instanceof Alien){
+                        Sprite spriteAst = obj1.getSprite();
+                        Sprite spriteAln = obj2.getSprite();
+
+                        float tileHeight = tmap.getTileHeight();
+                        float tileWidth  = tmap.getTileWidth();
+                        
+                        int middleTile = (int)((spriteAst.getX() + spriteAst.getWidth()/2) / tileWidth);
+                        int topTile = (int)(spriteAln.getY()  / tileHeight);
+                        int bottomTile = (int)((spriteAst.getY() + obj1.getSprite().getHeight() -1) / tileHeight);
+
+                        if(topTile == bottomTile){
+                            tmap.setTileChar('g', middleTile, (int)(bottomTile+tileHeight));
+                        }
+                        else{
+                            ((Astronaut)obj1).loseLife();
+                        }
+                    }
+                    if(obj2 instanceof Astronaut && obj1 instanceof Alien){((Astronaut)obj2).loseLife();}
                 }
             }
         }
     }
+*/
+    public void update(long timeElapsed){
+        for(GameObject obj: gameObjects){
+            obj.update(timeElapsed);
+        }
+        for(int i = 0; i<gameObjects.size(); i++){
+            for(int j=i+1; j<gameObjects.size(); j++){
+                GameObject a = gameObjects.get(i);
+                GameObject b = gameObjects.get(j);
+
+                if(boundingBoxCollision(a, b)){
+                    handleCollision(a, b);
+                }
+            }
+        }
+        for(GameObject obj: gameObjects){
+            if (obj instanceof Astronaut) {
+                Astronaut a = (Astronaut)obj;
+                checkFloorTileCollision(a);
+                checkHorizontalCollision(a);
+                checkTopTileCollision(a);
+            }
+        }
+
+        
+    }
+
+    public void handleCollision(GameObject obj1, GameObject obj2){
+        if(obj1 instanceof Astronaut && obj2 instanceof Alien){
+
+            handleAstronautAlienCollision((Astronaut)obj1, (Alien)obj2);
+        }
+        if(obj2 instanceof Astronaut && obj1 instanceof Alien){
+
+            handleAstronautAlienCollision((Astronaut)obj2, (Alien)obj1);
+        }
+    }
+
+    public void handleAstronautAlienCollision(Astronaut astronaut, Alien alien){
+
+        
+        Sprite astSprite = astronaut.getSprite();
+        Sprite alnSprite = alien.getSprite();
+
+        float astronautFoot = astSprite.getY() + astSprite.getHeight();
+        float alienHead = alnSprite.getY();
+
+        float collisionMargin = 1f;
+
+        boolean falling = astSprite.getVelocityY()>0;
+
+        boolean stomp = falling && astronautFoot <= alienHead+collisionMargin;
+
+        if(stomp){
+            killAlien(astronaut, alien);
+        }
+        else{
+            astronaut.loseLife();
+        }
+        
+    }
+
+    public void killAlien(Astronaut astronaut, Alien alien){
+        Sprite alienSprite = alien.getSprite();
+
+        int tileX = (int)((alienSprite.getX() + alienSprite.getWidth()/ 2)/tmap.getTileWidth());
+        int tileY = (int)((alienSprite.getY() + alienSprite.getHeight() + alienSprite.getHeight()) / tmap.getTileHeight());
+
+        gameObjects.remove(alien);
+
+        tmap.setTileChar('9', tileX, tileY);
+
+        astronaut.getSprite().setVelocityY(-0.1f);
+        astronaut.setOnGround(false);
+    }
+
 
     /**
      * Draw the Tile Map, GameObjects, and a message informing the player of
@@ -72,20 +167,39 @@ public class Level{
         else{
             Msg = "All parts collected! Board the spaceship.";
         }
-
         g.drawString(Msg, 0, 50);
 
         for (GameObject obj : gameObjects) {
             obj.draw(g, xOffset, yOffset);
         }
+
     }
 
+    /**
+     * check if the Astronaut's head is colliding with a tile. 
+     * 
+     * @param ast the Astronaut
+     */
     public void checkTopTileCollision(Astronaut ast){
         Sprite s = ast.getSprite();
 
         float tileWidth = tmap.getTileWidth();
         float tileHeight = tmap.getTileHeight();
 
+        int headTile = (int)(s.getY()/tileHeight);
+
+        int leftTile = (int)((s.getX()+2)/tileWidth);
+        int rightTile = (int)((s.getX()+s.getWidth()-2)/tileWidth);
+
+        for(int i = leftTile; i <= rightTile; i++){
+            char ch = tmap.getTileChar(i, headTile);
+
+            if (ch != '.') {
+                s.setY((topTile+1) * tileHeight);
+                s.setVelocityY(0);
+                break;
+            }
+        }
     }
 
     /**
@@ -101,29 +215,31 @@ public class Level{
         float tileHeight = tmap.getTileHeight();
 
         int tileX = (int)((s.getX() + s.getWidth()/2) / tileWidth); // middle of sprite
-        int tileY = (int)((s.getY() + s.getHeight()) / tileHeight); // bottom of sprite
+        int tileYBottom = (int)((s.getY() + s.getHeight()) / tileHeight); // bottom of sprite
+        int tileYTop = (int)(s.getY() /tileHeight); //top of sprite
+        topTile = tileYTop;
         
-        char ch = tmap.getTileChar(tileX, tileY);
+        char chBottom = tmap.getTileChar(tileX, tileYBottom);
+        char chTop = tmap.getTileChar(tileX, tileYTop);
+
         //TODO:
         //check for other spaceship parts. If part is final part && partsCollected == 3 -> draw spaceship at end.
-        if (ch == 'p' || ch == 'q' || ch=='s') {
-            tmap.setTileChar('.', tileX, tileY);
+        if (chBottom == 'p' || chBottom == 'q' || chBottom =='s') {
+            tmap.setTileChar('.', tileX, tileYBottom);
             ast.setOnGround(false);
             partsCollected++;
         }
-        /*else if (ch == 'x') {
-            ast.setOnGround(false);
-            ast.loseLife();
-        }   Shouldnt be needed since the tornado is there, cba rewriting it if not though */
-        else if (ch != '.') {
-            s.setY(tileY * tileHeight - s.getHeight());
+        else if (chBottom != '.') {
+            s.setY(tileYBottom * tileHeight - s.getHeight());
             s.setVelocityY(0);
             ast.setOnGround(true);
-        }else{
+        }
+        else{
             ast.setOnGround(false);
         }
     
     }
+
 
     /**
      * Check for horizontal collisions between the Astronaut and the Tile Map.
@@ -158,14 +274,14 @@ public class Level{
 
         if(ast.movingLeft) { 
 
-        int leftTile = (int)(s.getX() / tileWidth);
+            int leftTile = (int)(s.getX() / tileWidth);
 
-        for(int y = topTile; y <= bottomTile; y++) {
+            for(int y = topTile; y <= bottomTile; y++) {
             if(tmap.getTileChar(leftTile, y) != '.') {
                 s.setX((leftTile + 1) * tileWidth);
                 s.setVelocityX(0);
+                }
             }
-        }
         }
     }
 
