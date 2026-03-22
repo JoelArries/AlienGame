@@ -22,7 +22,13 @@ public class AlienGame2 extends GameCore{
 
     private boolean drawBoundingBox = false;
 
-    long timeElapsed;
+    private long timeElapsed;
+    private int gameState;
+    private int level1 = 0;
+    private int level2Loading = 1;
+    private long loadingTimer = 0;
+    private int level2 = 3;
+
 
     private Image space, background, emptyHeart, fullHeart;
 
@@ -82,6 +88,17 @@ public class AlienGame2 extends GameCore{
 
         g.drawImage(space, 0, 0, null);
         g.drawImage(background, 0, 0, null);
+
+        if(gameState == level2Loading){
+            g.setColor(Color.BLACK);
+            g.fillRect(0, 0, getWidth(), getHeight());
+
+            g.setColor(Color.WHITE);
+            g.drawString("Those pesky Aliens have stolen all of your fuel!", 100, 200);
+            g.drawString("Squash the Aliens to retrieve your precious petrol!", 93, 215);
+
+            return;
+        }
     
         level.draw(g, xOffset, yOffset);
 
@@ -102,6 +119,11 @@ public class AlienGame2 extends GameCore{
             astronautSprite.drawBoundingCircle(g);
         }
 
+        if(level.atShip(astronaut)){
+            String message = "Press B to board the ship!";
+            g.setColor(Color.WHITE);
+            g.drawString(message, 150, 200);
+        }
     }
 
     /**
@@ -110,6 +132,15 @@ public class AlienGame2 extends GameCore{
     public void update(long timeElapsed){
         float yDiff = 0;
         boolean inTornado = false;
+
+        if(gameState == level2Loading){
+            loadingTimer += timeElapsed;
+
+            if(loadingTimer > 8000){
+                gameState = level2;
+            }
+            return;
+        }
 
         for(GameObject obj: level.getObjects()){
             if(obj instanceof Tornado){
@@ -196,6 +227,9 @@ public class AlienGame2 extends GameCore{
             case KeyEvent.VK_UP     :   astronaut.jump(); break;
             case KeyEvent.VK_ESCAPE :   stop(); break;
             case KeyEvent.VK_D      :   drawBoundingBox = !drawBoundingBox; break;
+            case KeyEvent.VK_B      :   if(level.atShip(astronaut)){level.removeObject(astronaut); 
+                                            gameState = level2Loading; break;} 
+            case KeyEvent.VK_Z      :   gameState = level2Loading; break;
             default                 :   break;
         }
     }

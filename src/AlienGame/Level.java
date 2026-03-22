@@ -20,7 +20,6 @@ public class Level{
 
     /**
      * Add a GameObject to the gameObjects ArrayList. 
-     * GameObjects can be Aliens, Astronauts, 
      * 
      * @param obj the object to add
      */
@@ -28,50 +27,29 @@ public class Level{
         gameObjects.add(obj);
     }
 
+    /**
+     * remove the specified GameObject from the gameObjects ArrayList.
+     * The removed object will no longer be drawn.
+     * 
+     * @param obj   the object to remove
+     */
+    public void removeObject(GameObject obj){
+        gameObjects.remove(obj);
+    }
+
+    /**
+     * Return an ArrayList of GameObjects
+     */
     public ArrayList<GameObject> getObjects(){
         return gameObjects;
     }
 
     /**
-     * Update game objects, check for tile and sprite-sprite collision
-     * 
+     * updates the GameObjects in the gameObjects ArrayList, checks for sprite/sprite collision, 
+     * checks for sprite/tilemap collision.
+     *  
      * @param timeElapsed
      */
-    /* 
-    public void update(long timeElapsed){
-        for(GameObject obj1 : gameObjects){
-            obj1.update(timeElapsed);
-            if(obj1 instanceof Astronaut){
-                checkFloorTileCollision((Astronaut)obj1);
-                checkHorizontalCollision((Astronaut)obj1);
-                checkTopTileCollision((Astronaut)obj1);
-            }
-            for(GameObject obj2 : gameObjects){
-                if(obj1 != obj2 && boundingBoxCollision(obj1, obj2)){
-                    if(obj1 instanceof Astronaut && obj2 instanceof Alien){
-                        Sprite spriteAst = obj1.getSprite();
-                        Sprite spriteAln = obj2.getSprite();
-
-                        float tileHeight = tmap.getTileHeight();
-                        float tileWidth  = tmap.getTileWidth();
-                        
-                        int middleTile = (int)((spriteAst.getX() + spriteAst.getWidth()/2) / tileWidth);
-                        int topTile = (int)(spriteAln.getY()  / tileHeight);
-                        int bottomTile = (int)((spriteAst.getY() + obj1.getSprite().getHeight() -1) / tileHeight);
-
-                        if(topTile == bottomTile){
-                            tmap.setTileChar('g', middleTile, (int)(bottomTile+tileHeight));
-                        }
-                        else{
-                            ((Astronaut)obj1).loseLife();
-                        }
-                    }
-                    if(obj2 instanceof Astronaut && obj1 instanceof Alien){((Astronaut)obj2).loseLife();}
-                }
-            }
-        }
-    }
-*/
     public void update(long timeElapsed){
         for(GameObject obj: gameObjects){
             obj.update(timeElapsed);
@@ -98,6 +76,12 @@ public class Level{
         
     }
 
+    /**
+     * Calls method to handle astronaut alien collision.
+     * 
+     * @param obj1
+     * @param obj2
+     */
     public void handleCollision(GameObject obj1, GameObject obj2){
         if(obj1 instanceof Astronaut && obj2 instanceof Alien){
 
@@ -109,6 +93,14 @@ public class Level{
         }
     }
 
+    /**
+     * Handles the collision between an astronaut and an alien. Checks if the bottom of the astronaut makes
+     * contact with the top of the alien, if it does, the alien is killed and the astronaut will bounce- leaving a 
+     * pool of slime behind.
+     * 
+     * @param astronaut
+     * @param alien
+     */
     public void handleAstronautAlienCollision(Astronaut astronaut, Alien alien){
 
         
@@ -133,6 +125,14 @@ public class Level{
         
     }
 
+    /**
+     * Remove the alien from the gameObjects ArrayList and replace the tile it is standing on
+     * with a slime puddle tile.
+     * Make the astronaut jump
+     * 
+     * @param astronaut
+     * @param alien
+     */
     public void killAlien(Astronaut astronaut, Alien alien){
         Sprite alienSprite = alien.getSprite();
 
@@ -300,6 +300,23 @@ public class Level{
                 (s1.getX() < (s2.getX() + s2.getWidth())) &&
                 ((s1.getY() + s1.getHeight() > s2.getY()) &&
                         (s1.getY() < s2.getY() + s2.getHeight())));
+    }
+
+    /**
+     * Checks if the Astronaut is at the X and Y coordinates of the Spaceship, and if all parts are collected.
+     * if these requirements are satisfied, true is returned
+     * 
+     * @param ast   the Astronaut object.
+     * @return
+     */
+    public boolean atShip(Astronaut ast){
+        Sprite astSprite = ast.getSprite();
+        if(astSprite.getX() >= 1970.0 && astSprite.getY() == 224 && partsCollected == 3){
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 
     /**
